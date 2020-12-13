@@ -47,7 +47,7 @@ public class ArithmeticExpression {
             {
                 operator.add("(");
             }
-            System.out.println();
+  //          System.out.println();
 
 
 
