@@ -21,7 +21,7 @@ public class ArithmeticExpression {
         //Getting the current directory path
         String currentDirectory = System.getProperty("user.dir");
 
-        String data = ae.readAsString(currentDirectory+"/data_paths.txt");
+        String data = ae.readAsString(currentDirectory+"/arithmetic_data.txt");
 
         //Splitting the test cases from input file using the delimitor
         String[] test_cases = data.split("\n");
@@ -52,52 +52,69 @@ public class ArithmeticExpression {
                 operator.add('(');
             }
 
-            if (values[i] >= '0' && values[i] <= '9') {
+            else if (values[i] >= '0' && values[i] <= '9') {
              StringBuffer sb = new StringBuffer();
 
-             while (values[i]>= '0' && values[i] <= '9')
+             while (i<tokens.length && values[i]>= '0' && values[i] <= '9')
                  sb.append(values[i++]);
 
                  operand.add(Integer.parseInt(sb.toString()));
                  i--;
             }
 
-            if (values[i] == '+' || values[i] == '-' ||values[i] == '*' ||values[i] == '/')
+            else if (values[i] == '+' || values[i] == '-' ||values[i] == '*' ||values[i] == '/' || values[i] == '^')
             {
-                if (!operator.empty() && precedence(values[i],operator.peek()))
-                    operand.add(performOperation(values[i],operand.pop(),operand.pop()));
+                if (!operator.empty() && precedence(values[i],operator.peek()) && operator.peek()!='^')
+                    operand.add(performOperation(operator.pop(),operand.pop(),operand.pop()));
                 operator.add(values[i]);
             }
 
-            if (values[i] == ')')
+            else if (values[i] == ')')
             {
                 while (operator.peek()!='(')
                     operand.add(performOperation(operator.pop(),operand.pop(),operand.pop()));
                 operator.pop();}
         }
 
+
+        while (!operator.empty())
+            operand.add(performOperation(operator.pop(),operand.pop(),operand.pop()));
+
+        System.out.println(operand.peek());
+
+
     }
 
     private boolean precedence(char value, Character peek) {
-        if (value=='+'||value == '-' && peek == '*' || peek == '/')
-            return true;
-        return false;
+                if ((peek=='(') || (peek == ')'))
+                    return false;
+                if ((peek=='*'||peek == '/') && (value == '^')
+
+                || (peek=='+'||peek == '-') && (value == '^')
+
+                || (value=='*'||value == '/') && (peek == '+' || peek == '-'))
+
+            return false;
+        return true;
     }
 
-    private Integer performOperation(Character operator, Integer op1, Integer op2) {
+    private int performOperation(Character operator, Integer op1, Integer op2) {
         switch (operator) {
-            case '+':
-                return op1 + op2;
-            case '-':
-                return op1 - op2;
+            case '^':
+                return (int) Math.pow((double) op2,(double) op1);
+            case '+': {
+                return op2 + op1;
+            }
+            case '-':{
+                return op2 - op1;}
             case '*':
-                return op1 * op2;
+                return op2 * op1;
             case '/': {
                 if (op2==0)
                     throw new
                         UnsupportedOperationException(
                         "Cannot divide by zero");;
-                return op1 / op2;
+                return op2 / op1;
             }
 
 
