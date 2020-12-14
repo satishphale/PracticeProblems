@@ -49,13 +49,32 @@ public class Dijstras {
 
     public static void main(String args[]) throws Exception
     {
-        int V = 5;
+        int V;// = 5;
 
+        Set<Integer> vertices = new HashSet<>();
 
         String currentDirectory = System.getProperty("user.dir");
         String data = readAsString(currentDirectory+"/dijstras_data.txt");
 
-        String input[] = data.split("\n#");
+        String input[] = data.split("\n#\n");
+
+        //calculating the number of vertices from the input
+        for (int i1=0;i1< input.length;i1++)
+        {
+            String edges[] = input[i1].split("\n");
+            //for each edge
+            for (int j=0;j<edges.length;j++) {
+                String[] edge = edges[j].split(" ");
+                int vertex1 = Integer.parseInt(edge[0]);
+                int vertex2 = Integer.parseInt(edge[1]);
+
+                vertices.add(vertex1);
+                vertices.add(vertex2);
+            }}
+
+        //number of vertices are the size of set
+        V = vertices.size();
+
 
         //for each input case
         for (int i1=0;i1< input.length;i1++)
@@ -84,6 +103,7 @@ public class Dijstras {
 
             dj.dijstras(adjacent,start);
 
+            System.out.println("the minimum distance from node ");
             for (int i = 0;i<dj.dist.length;i++)
             {
                 System.out.println(start+" ----> "+i+" is "+dj.dist[i]);
