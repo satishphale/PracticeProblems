@@ -7,9 +7,6 @@ import java.util.Stack;
 
 public class ArithmeticExpression {
 
-
-
-
     //Function to read file
     private String readAsString(String s) throws IOException {
         String data = new String(Files.readAllBytes(Paths.get(s)));
