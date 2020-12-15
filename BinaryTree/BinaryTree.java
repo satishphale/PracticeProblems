@@ -2,26 +2,43 @@ package BinaryTree;
 
 public class BinaryTree {
     static boolean flag = true;
-    static class Tree
-    {
+
+    static class Tree {
         Tree prev;
         Tree next;
 
         int data;
-        Tree()
-        {
+
+        Tree() {
 
         }
-        Tree(int data)
-        {
-            this.data=data;
+
+        Tree(int data) {
+            this.data = data;
             this.prev = null;
-            this.next =null;
+            this.next = null;
         }
     }
 
-    public static void main(String[] args)
-    {
+    private boolean isBinary(Tree root) {
+        if (root == null) {
+            return true;
+        }
+        if (root.prev != null && root.prev.data >= root.data) {
+            return false;
+        }
+        if (root.next != null && root.next.data < root.data) {
+            return false;
+        }
+        if (!isBinary(root.prev) || !isBinary(root.next))
+            return false;
+
+        return true;
+
+    }
+
+
+    public static void main(String[] args) {
         BinaryTree bt = new BinaryTree();
 
         Tree root = new Tree(100);
@@ -39,20 +56,5 @@ public class BinaryTree {
 
 
         System.out.println(bt.isBinary(root));
-    }
-
-    private boolean isBinary(Tree root) {
-        if (root==null){
-            return true;
-        }
-        if (root.prev != null && root.prev.data>=root.data){
-            return false;}
-        if (root.next != null && root.next.data<root.data){
-            return false;}
-        if (!isBinary(root.prev) || !isBinary(root.next))
-            return false;
-
-        return true;
-
     }
 }
