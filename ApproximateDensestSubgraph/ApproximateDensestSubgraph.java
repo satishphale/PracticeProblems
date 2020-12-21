@@ -6,6 +6,7 @@ import java.util.*;
 
 public class ApproximateDensestSubgraph {
 
+    //class to store the updated values after removing the nodes from graph
     private static class DenseNode
     {
         Set vertices;
@@ -23,6 +24,68 @@ public class ApproximateDensestSubgraph {
     }
 
 
+    private static List<List<Integer>> removeVertex(List<List<Integer>> adjacent, int vertex_to_remove) {
+        List<List<Integer>> tmp = adjacent;
+        //tmp.get(vertex_to_remove);
+        tmp.remove(vertex_to_remove);
+        //int size = adjacent.size();
+        int i=0;
+        while (i!= adjacent.size())
+        {
+            List<Integer> lst = adjacent.get(i);
+            if (lst.contains(vertex_to_remove))
+            {
+                int index = tmp.get(i).indexOf(vertex_to_remove);
+                tmp.get(i).remove(index);
+            }
+            i++;
+        }
+
+
+        return tmp;
+    }
+
+    private static int getVertices(List<List<Integer>> adjacent) {
+        int vertices = adjacent.size();
+        return vertices;
+    }
+
+    private static int getEdges(List<List<Integer>> adjacent, int v) {
+        int i = 0;
+        int size = 0;
+        while (i != v) {
+            size += adjacent.get(i).size();
+            i++;
+        }
+        return size;
+    }
+
+    private static String getMinimumDegreeVertex(List<List<Integer>> adjacent,int V) {
+        int i = 0;
+        StringBuffer sb = null;// = new StringBuffer();
+        while (i!=V)
+        {
+            int min_size=Integer.MAX_VALUE;
+            int cur_size = adjacent.get(i).size();
+            if (cur_size<min_size){
+                sb = new StringBuffer();
+                sb.append(cur_size);
+                sb.append("_");
+                sb.append(i);
+            }
+
+            i++;
+        }
+
+        return sb.toString();
+    }
+
+    private String readAsString(String s) throws IOException {
+        String data = new String(Files.readAllBytes(Paths.get(s)));
+        return data;
+    }
+
+
     public static void main(String[] args) throws IOException {
 
 
@@ -33,7 +96,7 @@ public class ApproximateDensestSubgraph {
 
         //calculating the number of vertices from the input
         for (int i1 = 0; i1 < input.length; i1++) {
-            int V;// = 5;
+            int V;
 
             Set<Integer> vertices = new HashSet<>();
             HashMap<Integer,DenseNode> dn = new HashMap<>();
@@ -70,6 +133,7 @@ public class ApproximateDensestSubgraph {
                 adjacent.get(vertex2).add(vertex1);
             }
 
+            //Calculating initial density of a graph
             int no_edges = getEdges(adjacent, V) / 2;
             int no_vertices = getVertices(adjacent);
             double density = no_edges / (double) no_vertices;
@@ -81,17 +145,21 @@ public class ApproximateDensestSubgraph {
             DenseNode first_dn = new DenseNode(first_vertices, no_edges, density);
             dn.put(V, first_dn);
 
+
+            //Calculating density of remaining n-2 vertices
             int i = no_vertices - 1;
             while (i != 2) {
 
-                Set<Integer> new_vertices = new HashSet<>();
+
                 String min_vertex = getMinimumDegreeVertex(adjacent, V);
                 String[] pair = min_vertex.split("_");
                 int vertex_to_remove = Integer.parseInt(pair[1]);
 
                 adjacent = removeVertex(adjacent, vertex_to_remove);
                 vertices.remove(vertex_to_remove);
-                //new_vertices.
+
+                //new_vertices set for storing the changed vertices
+                Set<Integer> new_vertices = new HashSet<>();
                 Iterator<Integer> set_itr = vertices.iterator();
                 while (set_itr.hasNext())
                     new_vertices.add(set_itr.next());
@@ -100,14 +168,18 @@ public class ApproximateDensestSubgraph {
                 no_vertices = getVertices(adjacent);
                 density = no_edges / (double) no_vertices;
 
+                //adding updated values in the map
                 dn.put(i, new DenseNode(new_vertices, no_edges, density));
                 i--;
 
             }
 
+
+            //node to store the maximum density
             DenseNode max_dense_node = new DenseNode();
             Iterator<Integer> itr1 = dn.keySet().iterator();
 
+            //assigning initial values
             max_dense_node.vertices = first_dn.vertices;
             max_dense_node.density = first_dn.density;
             max_dense_node.edges = first_dn.edges;
@@ -116,6 +188,7 @@ public class ApproximateDensestSubgraph {
                 int x = itr1.next();
                 DenseNode tmp_dn = dn.get(x);
 
+                //if assigning new values if it has greater density
                 if (tmp_dn.density > first_dn.density) {
                     max_dense_node.vertices = tmp_dn.vertices;
                     max_dense_node.density = tmp_dn.density;
@@ -132,63 +205,4 @@ public class ApproximateDensestSubgraph {
             }
 
 
-    private static List<List<Integer>> removeVertex(List<List<Integer>> adjacent, int vertex_to_remove) {
-        List<List<Integer>> tmp = adjacent;
-        //tmp.get(vertex_to_remove);
-        tmp.remove(vertex_to_remove);
-        //int size = adjacent.size();
-        int i=0;
-        while (i!= adjacent.size())
-        {
-            List<Integer> lst = adjacent.get(i);
-            if (lst.contains(vertex_to_remove))
-            {
-                int index = tmp.get(i).indexOf(vertex_to_remove);
-                tmp.get(i).remove(index);
-        }
-            i++;
-        }
-
-
-        return tmp;
-    }
-
-    private static int getVertices(List<List<Integer>> adjacent) {
-        int vertices = adjacent.size();
-        return vertices;
-    }
-
-    private static int getEdges(List<List<Integer>> adjacent, int v) {
-        int i = 0;
-        int size = 0;
-        while (i != v) {
-            size += adjacent.get(i).size();
-            i++;
-        }
-        return size;
-    }
-    private static String getMinimumDegreeVertex(List<List<Integer>> adjacent,int V) {
-        int i = 0;
-        StringBuffer sb = null;// = new StringBuffer();
-        while (i!=V)
-        {
-            int min_size=Integer.MAX_VALUE;
-            int cur_size = adjacent.get(i).size();
-            if (cur_size<min_size){
-                sb = new StringBuffer();
-                sb.append(cur_size);
-                sb.append("_");
-                sb.append(i);
-            }
-
-        i++;
-        }
-
-        return sb.toString();
-    }
-
-    private String readAsString(String s) throws IOException {
-        String data = new String(Files.readAllBytes(Paths.get(s)));
-        return data;
-    }
 }
