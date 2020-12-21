@@ -162,6 +162,7 @@ public class Dijstras {
 
     private static String readAsString(String s) throws Exception {
         String data = new String(Files.readAllBytes(Paths.get(s)));
+        System.out.println();
         return  data;
     }
 }
