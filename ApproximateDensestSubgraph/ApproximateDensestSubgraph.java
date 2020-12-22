@@ -23,13 +23,15 @@ public class ApproximateDensestSubgraph {
 
     }
 
-
+    //method to remove the vertex from the graph
     private static List<List<Integer>> removeVertex(List<List<Integer>> adjacent, int vertex_to_remove) {
         List<List<Integer>> tmp = adjacent;
-        //tmp.get(vertex_to_remove);
+        //remove the vertex from the list
         tmp.remove(vertex_to_remove);
         //int size = adjacent.size();
         int i=0;
+
+        //removing the references of the deleted node in the graph
         while (i!= adjacent.size())
         {
             List<Integer> lst = adjacent.get(i);
@@ -45,11 +47,13 @@ public class ApproximateDensestSubgraph {
         return tmp;
     }
 
+    //Method to count the number of vertices in the graph
     private static int getVertices(List<List<Integer>> adjacent) {
         int vertices = adjacent.size();
         return vertices;
     }
 
+    //method to count the number of edges in the graph
     private static int getEdges(List<List<Integer>> adjacent, int v) {
         int i = 0;
         int size = 0;
@@ -60,26 +64,26 @@ public class ApproximateDensestSubgraph {
         return size;
     }
 
-    private static String getMinimumDegreeVertex(List<List<Integer>> adjacent,int V) {
+    //method to find the minimum degree vertex in the graph
+    private static int getMinimumDegreeVertex(List<List<Integer>> adjacent,int V) {
         int i = 0;
-        StringBuffer sb = null;// = new StringBuffer();
+        int position=0;
         while (i!=V)
         {
             int min_size=Integer.MAX_VALUE;
             int cur_size = adjacent.get(i).size();
+            //setting the minimum degree vertex
             if (cur_size<min_size){
-                sb = new StringBuffer();
-                sb.append(cur_size);
-                sb.append("_");
-                sb.append(i);
+                position = i;
             }
 
             i++;
         }
 
-        return sb.toString();
+        return position;
     }
 
+    //method to read the file
     private String readAsString(String s) throws IOException {
         String data = new String(Files.readAllBytes(Paths.get(s)));
         return data;
@@ -151,9 +155,7 @@ public class ApproximateDensestSubgraph {
             while (i != 2) {
 
 
-                String min_vertex = getMinimumDegreeVertex(adjacent, V);
-                String[] pair = min_vertex.split("_");
-                int vertex_to_remove = Integer.parseInt(pair[1]);
+                int vertex_to_remove = getMinimumDegreeVertex(adjacent, V);
 
                 adjacent = removeVertex(adjacent, vertex_to_remove);
                 vertices.remove(vertex_to_remove);
