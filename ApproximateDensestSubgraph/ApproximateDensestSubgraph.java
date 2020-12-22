@@ -100,6 +100,7 @@ public class ApproximateDensestSubgraph {
 
         //calculating the number of vertices from the input
         for (int i1 = 0; i1 < input.length; i1++) {
+            System.out.println("Test case: "+(i1+1));
             int V;
 
             Set<Integer> vertices = new HashSet<>();
@@ -200,7 +201,7 @@ public class ApproximateDensestSubgraph {
 
             }
 
-            System.out.println("Vertices in the densest subgraph are: " + max_dense_node.vertices + " Size of the subgraph is: " + max_dense_node.edges + " Density of subgraph is: " + max_dense_node.density);
+            System.out.println("Vertices in the densest subgraph are: " + max_dense_node.vertices + "\nSize of the subgraph(# of edges in subgraph) is: " + max_dense_node.edges + "\nDensity of subgraph is: " + max_dense_node.density+"\n\n");
 
 
         }
