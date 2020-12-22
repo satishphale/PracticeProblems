@@ -9,11 +9,73 @@ public class GoldbergsAlgorithm {
 
     //Graph in the form of adjacency list
     public static List<List<Integer>> adjacent;
+    static int V=0;
 
     //method to read the file
     private String readAsString(String s) throws IOException {
         String data = new String(Files.readAllBytes(Paths.get(s)));
         return data;
+    }
+
+
+    //method to find the densest subgraph
+    private List<List<Integer>> findDensestSubgraph(List<List<Integer>> adjacent, int V) {
+        int min_degree = 0;
+        int max_degree = getEdges(adjacent,V);
+        List<List<Integer>> subgraph = null;
+        List<List<Integer>> source_segment;
+        double difference = 1/((double)V*((double) V-1));
+
+        while (max_degree - min_degree >= difference)
+        {
+            //applying binary search
+            int least_density = (max_degree+min_degree)/2;
+            source_segment = makeGraph(adjacent);
+
+            if (source_segment == null)
+                max_degree = least_density;
+            else
+            {
+                min_degree = least_density;
+                subgraph = source_segment;
+            }
+
+
+        }
+
+        return subgraph;
+    }
+
+    //method to get subgraph
+    private List<List<Integer>> makeGraph(List<List<Integer>> adjacent) {
+        List<List<Integer>> subgraph = null;
+        int source=V;
+        int sink=V+1;
+
+
+
+
+
+        return subgraph;
+    }
+
+    //method to count the number of edges in the graph
+    private int getEdges(List<List<Integer>> adjacent, int v) {
+        int i = 0;
+        int size = 0;
+        while (i != v) {
+            size += adjacent.get(i).size();
+            i++;
+        }
+        return size/2;
+    }
+
+    //Method to count the number of vertices in the graph
+    private int getVertices(List<List<Integer>> adjacent) {
+        if (adjacent==null)
+            return 0;
+        int vertices = adjacent.size();
+        return vertices;
     }
 
 
@@ -27,7 +89,6 @@ public class GoldbergsAlgorithm {
         //calculating the number of vertices from the input
         for (int i1 = 0; i1 < input.length; i1++) {
             System.out.println("Test case: " + (i1 + 1));
-            int V;
 
             Set<Integer> vertices = new HashSet<>();
 
@@ -72,54 +133,6 @@ public class GoldbergsAlgorithm {
         }
     }
 
-    private List<List<Integer>> findDensestSubgraph(List<List<Integer>> adjacent, int V) {
-        int min_degree = 0;
-        int max_degree = getEdges(adjacent,V);
-        List<List<Integer>> subgraph = null;
-        List<List<Integer>> source_segment;
-        double difference = 1/((double)V*((double) V-1));
 
-        while (max_degree - min_degree >= difference)
-        {
-            int least_density = (max_degree+min_degree)/2;
-            source_segment = makeGraph(adjacent);
-
-            if (source_segment == null)
-                max_degree = least_density;
-            else
-            {
-                min_degree = least_density;
-                subgraph = source_segment;
-            }
-
-
-        }
-
-    return subgraph;
-    }
-
-
-    private List<List<Integer>> makeGraph(List<List<Integer>> adjacent) {
-        List<List<Integer>> subgraph = null;
-
-        return subgraph;
-    }
-
-    //method to count the number of edges in the graph
-    private int getEdges(List<List<Integer>> adjacent, int v) {
-        int i = 0;
-        int size = 0;
-        while (i != v) {
-            size += adjacent.get(i).size();
-            i++;
-        }
-        return size/2;
-    }
-
-    //Method to count the number of vertices in the graph
-    private int getVertices(List<List<Integer>> adjacent) {
-        int vertices = adjacent.size();
-        return vertices;
-    }
 
 }
