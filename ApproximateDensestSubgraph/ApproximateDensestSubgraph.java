@@ -6,6 +6,9 @@ import java.util.*;
 
 public class ApproximateDensestSubgraph {
 
+    //Graph in the form of adjacency list
+    public static List<List<Integer>> adjacent;
+
     //class to store the updated values after removing the nodes from graph
     private static class DenseNode
     {
@@ -24,7 +27,7 @@ public class ApproximateDensestSubgraph {
     }
 
     //method to remove the vertex from the graph
-    private static List<List<Integer>> removeVertex(List<List<Integer>> adjacent, int vertex_to_remove) {
+    private static List<List<Integer>> removeVertex(int vertex_to_remove) {
         List<List<Integer>> tmp = adjacent;
         //remove the vertex from the list
         tmp.remove(vertex_to_remove);
@@ -122,7 +125,7 @@ public class ApproximateDensestSubgraph {
         V = vertices.size();
 
 
-            List<List<Integer>> adjacent = new ArrayList<List<Integer>>();
+            adjacent = new ArrayList<List<Integer>>();
             for (int i = 0; i < V; i++) {
                 List<Integer> node = new ArrayList<>();
                 adjacent.add(node);
@@ -158,7 +161,7 @@ public class ApproximateDensestSubgraph {
 
                 int vertex_to_remove = getMinimumDegreeVertex(adjacent, V);
 
-                adjacent = removeVertex(adjacent, vertex_to_remove);
+                adjacent = removeVertex(vertex_to_remove);
                 vertices.remove(vertex_to_remove);
 
                 //new_vertices set for storing the changed vertices
@@ -202,6 +205,7 @@ public class ApproximateDensestSubgraph {
             }
 
             System.out.println("Vertices in the densest subgraph are: " + max_dense_node.vertices + "\nSize of the subgraph(# of edges in subgraph) is: " + max_dense_node.edges + "\nDensity of subgraph is: " + max_dense_node.density+"\n\n");
+
 
 
         }
