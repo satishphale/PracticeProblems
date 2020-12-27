@@ -11,6 +11,22 @@ public class GoldbergsAlgorithm {
     public static List<List<Integer>> adjacent;
     static int V=0;
 
+    private class Node
+    {
+        int node;
+        int cost;
+
+        Node()
+        {
+
+        }
+        Node(int node,int cost)
+        {
+            this.node = node;
+            this.cost = cost;
+        }
+    }
+
     //method to read the file
     private String readAsString(String s) throws IOException {
         String data = new String(Files.readAllBytes(Paths.get(s)));
@@ -51,12 +67,32 @@ public class GoldbergsAlgorithm {
         List<List<Integer>> subgraph = null;
         int source=V;
         int sink=V+1;
-
+        List<List<Node>> weighted_graph = getWeightedGraph(adjacent);
 
 
 
 
         return subgraph;
+    }
+
+    //method to Assign weights to unweighted graph
+    List<List<Node>> getWeightedGraph(List<List<Integer>> adjacent)
+    {
+        List<List<Node>> weighted_graph = new ArrayList<List<Node>>();
+
+        for (int i=0;i<adjacent.size();i++)
+        {
+            List<Node> node = new ArrayList<Node>();
+            Node tmp_node = new Node();
+            List<Integer> temp = adjacent.get(i);
+            for (int j = 0;j<temp.size();j++) {
+                tmp_node.node = temp.get(j);
+                tmp_node.cost = 1;
+                node.add(tmp_node);
+            }
+            weighted_graph.add(node);
+        }
+        return weighted_graph;
     }
 
     //method to count the number of edges in the graph
