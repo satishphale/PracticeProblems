@@ -46,7 +46,7 @@ public class GoldbergsAlgorithm {
         {
             //applying binary search
             int least_density = (max_degree+min_degree)/2;
-            source_segment = makeGraph(adjacent);
+            source_segment = TryDensity(adjacent,least_density);
 
             if (source_segment == null)
                 max_degree = least_density;
@@ -63,11 +63,13 @@ public class GoldbergsAlgorithm {
     }
 
     //method to get subgraph
-    private List<List<Integer>> makeGraph(List<List<Integer>> adjacent) {
+    private List<List<Integer>> TryDensity(List<List<Integer>> adjacent,int density) {
         List<List<Integer>> subgraph = null;
-        int source=V;
+        int source = V;
         int sink=V+1;
-        List<List<Node>> weighted_graph = getWeightedGraph(adjacent);
+
+        List<List<Node>> weighted_graph = getWeightedGraph(adjacent,density);
+        stCut(weighted_graph,source,sink);
 
 
 
@@ -75,23 +77,59 @@ public class GoldbergsAlgorithm {
         return subgraph;
     }
 
+    private void stCut(List<List<Node>> weighted_graph, int s, int t)
+    {
+        int u,v;
+
+        List<List<Node>> r_graph = weighted_graph;
+
+        int parent;
+
+
+    }
+
     //method to Assign weights to unweighted graph
-    List<List<Node>> getWeightedGraph(List<List<Integer>> adjacent)
+    List<List<Node>> getWeightedGraph(List<List<Integer>> adjacent,int density)
     {
         List<List<Node>> weighted_graph = new ArrayList<List<Node>>();
 
         for (int i=0;i<adjacent.size();i++)
         {
             List<Node> node = new ArrayList<Node>();
-            Node tmp_node = new Node();
+
             List<Integer> temp = adjacent.get(i);
             for (int j = 0;j<temp.size();j++) {
+                Node tmp_node = new Node();
                 tmp_node.node = temp.get(j);
                 tmp_node.cost = 1;
                 node.add(tmp_node);
             }
             weighted_graph.add(node);
         }
+
+        List<Node> source_adj = new ArrayList<>();
+        for(int i=0;i<V;i++)
+        {
+            Node tmp=new Node();
+            tmp.node=i;
+            tmp.cost=V;
+            source_adj.add(tmp);
+        }
+        weighted_graph.add(source_adj);
+
+        List<Node> sink_adj = new ArrayList<>();
+        for(int i=0;i<V;i++)
+        {
+            Node tmp=new Node();
+            int degree_of_node = adjacent.get(i).size();
+
+            tmp.node=i;
+            tmp.cost=V+2*density-degree_of_node;
+            sink_adj.add(tmp);
+        }
+        weighted_graph.add(sink_adj);
+
+
         return weighted_graph;
     }
 
