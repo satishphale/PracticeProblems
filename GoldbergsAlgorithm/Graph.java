@@ -104,7 +104,8 @@ public class Graph {
 					System.out.println(i + " - " + j); 
 				} 
 			} 
-		} 
+		}
+		return;
 	} 
 
 	//Driver Program 
@@ -114,13 +115,13 @@ public class Graph {
 		int graph[][] = {
 				{0, 1, 0, 0, 0, 7,12},
 				{1, 0, 1, 1, 1, 7,9},
-				{1, 1, 0, 1, 1, 7,10},
-				{1, 1, 1, 0, 1, 7,10},
-				{1, 1, 1, 1, 0, 7,10},
+				{0, 1, 0, 1, 1, 7,10},
+				{0, 1, 1, 0, 1, 7,10},
+				{0, 1, 1, 1, 0, 7,10},
 				{7, 7, 7, 7, 7, 0,0},
 				{12,9, 10,10,10,0,0}
 			}; 
-		minCut(graph, 0, 6);
+		minCut(graph, 5, 6);
 	} 
 } 
 // This code is contributed by Himanshu Shekhar 

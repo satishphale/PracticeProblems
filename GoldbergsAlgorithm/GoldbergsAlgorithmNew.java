@@ -1,4 +1,7 @@
 package GoldbergsAlgorithm;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.densesubgraph.*;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,9 +10,14 @@ import java.util.*;
 
 public class GoldbergsAlgorithmNew {
 
+
     //Graph in the form of adjacency list
     public static List<List<Integer>> adjacent;
-    static int V=0;
+    static int V=5;
+    static int E =7;
+
+    static Graph<Integer, DefaultEdge> graph;
+
 
     private static class Node
     {
@@ -85,7 +93,8 @@ public class GoldbergsAlgorithmNew {
         }
 
         //stCut(weighted_graph,source,sink);
-        subgraph = minCut(graph, source, sink);
+        //subgraph =
+                minCut(graph, source, sink);
 
 
 
@@ -143,7 +152,7 @@ public class GoldbergsAlgorithmNew {
     }
 
     // Prints the minimum s-t cut
-    private static List<List<Integer>> minCut(int[][] graph, int s, int t) {
+    private static List<List<Integer>> minCut2(int[][] graph, int s, int t) {
         int u, v;
 
         // Create a residual graph and fill the residual
@@ -208,6 +217,60 @@ public class GoldbergsAlgorithmNew {
         return induced_graph;
     }
 
+    // Prints the minimum s-t cut
+    private static void minCut(int[][] graph, int s, int t) {
+        int u,v;
+
+        // Create a residual graph and fill the residual
+        // graph with given capacities in the original
+        // graph as residual capacities in residual graph
+        // rGraph[i][j] indicates residual capacity of edge i-j
+        int[][] rGraph = new int[graph.length][graph.length];
+        for (int i = 0; i < graph.length; i++) {
+            for (int j = 0; j < graph.length; j++) {
+                rGraph[i][j] = graph[i][j];
+            }
+        }
+
+        // This array is filled by BFS and to store path
+        int[] parent = new int[graph.length];
+
+        // Augment the flow while tere is path from source to sink
+        while (bfs(rGraph, s, t, parent)) {
+
+            // Find minimum residual capacity of the edhes
+            // along the path filled by BFS. Or we can say
+            // find the maximum flow through the path found.
+            int pathFlow = Integer.MAX_VALUE;
+            for (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                pathFlow = Math.min(pathFlow, rGraph[u][v]);
+            }
+
+            // update residual capacities of the edges and
+            // reverse edges along the path
+            for (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                rGraph[u][v] = rGraph[u][v] - pathFlow;
+                rGraph[v][u] = rGraph[v][u] + pathFlow;
+            }
+        }
+
+        // Flow is maximum now, find vertices reachable from s
+        boolean[] isVisited = new boolean[graph.length];
+        dfs(rGraph, s, isVisited);
+
+        // Print all edges that are from a reachable vertex to
+        // non-reachable vertex in the original graph
+        for (int i = 0; i < graph.length; i++) {
+            for (int j = 0; j < graph.length; j++) {
+                if (graph[i][j] > 0 && isVisited[i] && !isVisited[j]) {
+                    System.out.println(i + " - " + j);
+                }
+            }
+        }
+    return;
+    }
 
 
     //method to Assign weights to unweighted graph
@@ -279,6 +342,34 @@ public class GoldbergsAlgorithmNew {
 
     public static void main(String[] args) throws IOException {
         GoldbergsAlgorithmNew ga = new GoldbergsAlgorithmNew();
+
+        graph.addVertex(0);
+        graph.addVertex(1);
+        graph.addVertex(2);
+        graph.addVertex(3);
+        graph.addVertex(4);
+
+        graph.addEdge(0,1);
+        graph.addEdge(1,0);
+        graph.addEdge(1,2);
+        graph.addEdge(1,3);
+        graph.addEdge(1,4);
+        graph.addEdge(2,1);
+        graph.addEdge(2,3);
+        graph.addEdge(2,4);
+        graph.addEdge(3,1);
+        graph.addEdge(3,2);
+        graph.addEdge(3,4);
+        graph.addEdge(4,1);
+        graph.addEdge(4,2);
+        graph.addEdge(4,3);
+
+
+        GoldbergMaximumDensitySubgraphAlgorithm sb = new GoldbergMaximumDensitySubgraphAlgorithm(graph,V,E,0.0);
+
+        Graph sm = sb.calculateDensest();
+
+        System.out.println(sm);
 
         String currentDirectory = System.getProperty("user.dir");
         String data = ga.readAsString(currentDirectory + "/goldberg_data.txt");
