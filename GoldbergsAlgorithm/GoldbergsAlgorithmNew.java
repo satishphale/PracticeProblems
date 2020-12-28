@@ -5,13 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class GoldbergsAlgorithm {
+public class GoldbergsAlgorithmNew {
 
     //Graph in the form of adjacency list
     public static List<List<Integer>> adjacent;
     static int V=0;
 
-    private class Node
+    private static class Node
     {
         int node;
         int cost;
@@ -53,13 +53,13 @@ public class GoldbergsAlgorithm {
             else
             {
                 min_degree = least_density;
-                subgraph = source_segment;
+                adjacent = source_segment;
             }
 
 
         }
 
-        return subgraph;
+        return adjacent;
     }
 
     //method to get subgraph
@@ -72,7 +72,20 @@ public class GoldbergsAlgorithm {
         List<List<Node>> weighted_graph = getWeightedGraph(adjacent,density,no_edges);
         //method to find the st cut
 
-        stCut(weighted_graph,source,sink);
+
+        int graph[][] = new int[V+2][V+2];
+
+        for (int i =0;i<V+2;i++) {
+            List<Node> cur_node = weighted_graph.get(i);
+            for (int j = 0; j < cur_node.size(); j++)
+            {
+                Node node = cur_node.get(j);
+                graph[i][node.node] = node.cost;
+        }
+        }
+
+        //stCut(weighted_graph,source,sink);
+        subgraph = minCut(graph, source, sink);
 
 
 
@@ -80,98 +93,122 @@ public class GoldbergsAlgorithm {
         return subgraph;
     }
 
-    private void stCut(List<List<Node>> weighted_graph, int s, int t)
-    {
-        int u,v;
+    // Returns true if there is a path
+    // from source 's' to sink 't' in residual
+    // graph. Also fills parent[] to store the path
+    private static boolean bfs(int[][] rGraph, int s,
+                               int t, int[] parent) {
 
-        //creating the residual graph
-        List<List<Node>> r_graph = weighted_graph;
+        // Create a visited array and mark
+        // all vertices as not visited
+        boolean[] visited = new boolean[rGraph.length];
 
-        //parent array to path detection
-        int[] parent = new int[r_graph.size()];
-
-        //Augment the flow while there is path
-        while (bfs(r_graph,s,t,parent))
-        {
-            //Finding the minimum residual capacity along the path
-            int path_flow = Integer.MAX_VALUE;
-            for (v=t;v!=s;v=parent[v])
-            {
-                u = parent[v];
-                int index = r_graph.get(u).indexOf(v);
-                path_flow = Math.min(path_flow,r_graph.get(u).get(index).cost);
-            }
-
-            //update the capacities and reverse the edge along the path
-            for (v=t;v!=s;v=parent[v])
-            {
-                u = parent[v];
-                int index = r_graph.get(u).indexOf(v);
-                r_graph.get(u).get(index).cost -= path_flow;
-
-                int index2 = r_graph.get(v).indexOf(u);
-                r_graph.get(v).get(index2).cost += path_flow;
-            }
-
-        }
-        //Now the flow is maximum and Using DFS to find the vertices that are reachable from S
-        boolean[] is_visited = new boolean[weighted_graph.size()];
-
-        dfs(r_graph,s,is_visited);
-
-        // Print all edges that are from a reachable vertex to
-        // non-reachable vertex in the original graph
-        for (int i = 0; i < weighted_graph.size(); i++) {
-                List<Node> tmp = weighted_graph.get(i);
-            for (Node n: tmp) {
-                if (n.cost > 0 && is_visited[i] && !is_visited[n.node]) {
-                    System.out.println(i + " - " + n.node);
-                }
-            }
-
-            }
-
-
-
-        }
-
-    private void dfs(List<List<Node>> r_graph, int s, boolean[] is_visited) {
-        is_visited[s] = true;
-        List<Node> lst = r_graph.get(s);
-        for (Node n: lst)
-            if (n.cost>0 && !is_visited[n.node])
-                dfs(r_graph,n.node,is_visited);
-    }
-
-    //method to find the path
-    private boolean bfs(List<List<Node>> r_graph, int s, int t, int[] parent)
-    {
-        boolean[] visited = new boolean[r_graph.size()];
+        // Create a queue, enqueue source vertex
+        // and mark source vertex as visited
+        Queue<Integer> q = new LinkedList<Integer>();
+        q.add(s);
         visited[s] = true;
-        Queue<Integer> queue = new ArrayDeque<>();
-        queue.add(s);
         parent[s] = -1;
 
-        while (!queue.isEmpty())
-        {
-            int u = queue.poll();
+        // Standard BFS Loop
+        while (!q.isEmpty()) {
+            int v = q.poll();
+            for (int i = 0; i < rGraph.length; i++) {
+                if (rGraph[v][i] > 0 && !visited[i]) {
+                    q.offer(i);
+                    visited[i] = true;
+                    parent[i] = v;
+                }
+            }
+        }
 
-            List<Node> tmp = r_graph.get(u);
+        // If we reached sink in BFS starting
+        // from source, then return true, else false
+        return (visited[t] == true);
+    }
 
-            for (Node node:
-                 tmp) {
+    // A DFS based function to find all reachable
+    // vertices from s. The function marks visited[i]
+    // as true if i is reachable from s. The initial
+    // values in visited[] must be false. We can also
+    // use BFS to find reachable vertices
+    private static void dfs(int[][] rGraph, int s,
+                            boolean[] visited) {
+        visited[s] = true;
+        for (int i = 0; i < rGraph.length; i++) {
+            if (rGraph[s][i] > 0 && !visited[i]) {
+                dfs(rGraph, i, visited);
+            }
+        }
+    }
 
-                if (!visited[node.node])
-                {
-                    queue.add(node.node);
-                    visited[node.node] = true;
-                    parent[node.node] = u;
+    // Prints the minimum s-t cut
+    private static List<List<Integer>> minCut(int[][] graph, int s, int t) {
+        int u, v;
+
+        // Create a residual graph and fill the residual
+        // graph with given capacities in the original
+        // graph as residual capacities in residual graph
+        // rGraph[i][j] indicates residual capacity of edge i-j
+        int[][] rGraph = new int[graph.length][graph.length];
+        for (int i = 0; i < graph.length; i++) {
+            for (int j = 0; j < graph.length; j++) {
+                rGraph[i][j] = graph[i][j];
+            }
+        }
+
+        // This array is filled by BFS and to store path
+        int[] parent = new int[graph.length];
+
+        // Augment the flow while tere is path from source to sink
+        while (bfs(rGraph, s, t, parent)) {
+
+            // Find minimum residual capacity of the edhes
+            // along the path filled by BFS. Or we can say
+            // find the maximum flow through the path found.
+            int pathFlow = Integer.MAX_VALUE;
+            for (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                pathFlow = Math.min(pathFlow, rGraph[u][v]);
+            }
+
+            // update residual capacities of the edges and
+            // reverse edges along the path
+            for (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                rGraph[u][v] = rGraph[u][v] - pathFlow;
+                rGraph[v][u] = rGraph[v][u] + pathFlow;
+            }
+        }
+
+        // Flow is maximum now, find vertices reachable from s
+        boolean[] isVisited = new boolean[graph.length];
+        dfs(rGraph, s, isVisited);
+
+
+        List<List<Integer>> induced_graph = new ArrayList<List<Integer>>();
+        // Print all edges that are from a reachable vertex to
+        // non-reachable vertex in the original graph
+        for (int i = 0; i < graph.length; i++) {
+            for (int j = 0; j < graph.length; j++) {
+                if (graph[i][j] > 0 && isVisited[i] && !isVisited[j] && i != V && j != (V + 1)) {
+                    System.out.println(i + " - " + j);
+//                    if (induced_graph.get(i) == null && induced_graph.get(j) == null) {
+                        List<Integer> tmp = new ArrayList<>();
+                        tmp.add(i);
+                        induced_graph.add(tmp);
+                        List<Integer> tmp2 = new ArrayList<>();
+                        tmp2.add(j);
+                        induced_graph.add(tmp2);
+  //                  }
                 }
             }
 
         }
-    return (visited[t]==true);
+        return induced_graph;
     }
+
+
 
     //method to Assign weights to unweighted graph
     List<List<Node>> getWeightedGraph(List<List<Integer>> adjacent,int density,int no_of_edges)
@@ -199,6 +236,7 @@ public class GoldbergsAlgorithm {
             tmp.node=i;
             tmp.cost=no_of_edges;
             source_adj.add(tmp);
+            weighted_graph.get(i).add(new Node(V, tmp.cost));
         }
         weighted_graph.add(source_adj);
 
@@ -211,6 +249,7 @@ public class GoldbergsAlgorithm {
             tmp.node=i;
             tmp.cost=no_of_edges+2*density-degree_of_node;
             sink_adj.add(tmp);
+            weighted_graph.get(i).add(new Node(V+1, tmp.cost));
         }
         weighted_graph.add(sink_adj);
 
@@ -239,7 +278,7 @@ public class GoldbergsAlgorithm {
 
 
     public static void main(String[] args) throws IOException {
-        GoldbergsAlgorithm ga = new GoldbergsAlgorithm();
+        GoldbergsAlgorithmNew ga = new GoldbergsAlgorithmNew();
 
         String currentDirectory = System.getProperty("user.dir");
         String data = ga.readAsString(currentDirectory + "/goldberg_data.txt");
