@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-class Directed 
+class TriangleCount
 { 
 	// Number of vertices in 
 	// the graph 
@@ -92,7 +92,7 @@ int triangleInGraph(int graph[][])
 
 // Driver code 
 public static void main(String args[]) throws IOException {
-	Directed obj = new Directed();
+	TriangleCount obj = new TriangleCount();
 
 
 	String currentDirectory = System.getProperty("user.dir");
@@ -103,7 +103,6 @@ public static void main(String args[]) throws IOException {
 	//calculating the number of vertices from the input
 	for (int i1 = 0; i1 < input.length; i1++) {
 		outputWriter.write("\nTest case: " + (i1 + 1)+"\n\n");
-		System.out.println("Test case: " + (i1 + 1));
 
 
 		Set<Integer> vertices = new HashSet<>();
@@ -167,12 +166,9 @@ public static void main(String args[]) throws IOException {
 
 			outputWriter.write("\n\nTotal number of Triangle in Graph : " +
 					cur_triangle+" after adding the edge:"+"<"+vertex1+","+vertex2+">");
-			System.out.println("\nTotal number of Triangle in Graph : "+
-					cur_triangle+" after adding the edge:"+"<"+vertex1+","+vertex2+">");
 
 
 			outputWriter.write("\nTriangles on edge: "+"<"+vertex1+","+vertex2+"> are: "+(cur_triangle-no_triangles));
-			System.out.println("Triangles on edge: "+"<"+vertex1+","+vertex2+"> are: "+(cur_triangle-no_triangles));
 
 			no_triangles = cur_triangle;
 
@@ -189,12 +185,10 @@ public static void main(String args[]) throws IOException {
 				if ((cur_triangle+sum)!=0)
 					gcc= (double) cur_triangle/ ((double)cur_triangle+(double)closed);
 			outputWriter.write("\nGlobal clustering coefficient: "+gcc);
-			System.out.println("Global clustering coefficient: "+gcc);
 
 
 
 		}
-		System.out.println("\n***********************************************************************");
 		outputWriter.write("\n***********************************************************************");
 
 	}
