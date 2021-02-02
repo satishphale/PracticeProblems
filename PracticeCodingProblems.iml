@@ -89,5 +89,16 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Downloads/poi-bin-5.0.0-20210120 (1)/poi-5.0.0/poi-5.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="poi-5.0.0" level="project" />
+    <orderEntry type="library" name="commons-codec-1.15" level="project" />
   </component>
 </module>
